@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>WFWorkflowActions</key>
+    <array>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.ask</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFAskActionPrompt</key>
+          <string>Enter YouTube URL</string>
+          <key>WFInputType</key>
+          <string>URL</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.geturl</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFURLActionURL</key>
+          <string>{{ShortcutInput}}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.runjavascriptonwebpage</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFJavaScriptSource</key>
+          <string>
+          var videoInfo = {};
+          var ytInitialPlayerResponse = null;
+          
+          // Try to find ytInitialPlayerResponse in the page source
+          var scripts = document.getElementsByTagName('script');
+          for (var i = 0; i &lt; scripts.length; i++) {
+            var script = scripts[i];
+            if (script.textContent.includes('ytInitialPlayerResponse')) {
+              eval(script.textContent);
+              break;
+            }
+          }
+          
+          if (ytInitialPlayerResponse) {
+            videoInfo.title = ytInitialPlayerResponse.videoDetails.title;
+            videoInfo.author = ytInitialPlayerResponse.videoDetails.author;
+            
+            // Get the highest quality format
+            var formats = ytInitialPlayerResponse.streamingData.formats;
+            var highestQualityFormat = formats.reduce((prev, current) =&gt; 
+              (prev.qualityLabel &gt; current.qualityLabel) ? prev : current
+            );
+            
+            videoInfo.downloadUrl = highestQualityFormat.url;
+            videoInfo.quality = highestQualityFormat.qualityLabel;
+          } else {
+            videoInfo.error = "Could not find video information";
+          }
+          
+          completion(JSON.stringify(videoInfo));
+        </string>
+          <key>WFInput</key>
+          <dict>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>WFWebPageContents</string>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFConditionalActionString</key>
+          <dict>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>JavaScript Result.error</string>
+            </dict>
+          </dict>
+          <key>WFControlFlowMode</key>
+          <integer>0</integer>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.showresult</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>Text</key>
+          <dict>
+            <key>Value</key>
+            <dict>
+              <key>string</key>
+              <string>Error: {{JavaScript Result.error}}</string>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFControlFlowMode</key>
+          <integer>1</integer>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.geturl</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFURLActionURL</key>
+          <string>{{JavaScript Result.downloadUrl}}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.documentpicker.save</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFInput</key>
+          <dict>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>Contents of URL</string>
+            </dict>
+          </dict>
+          <key>WFFileExtension</key>
+          <string>mp4</string>
+          <key>WFFileName</key>
+          <string>{{JavaScript Result.title}}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.showresult</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>Text</key>
+          <dict>
+            <key>Value</key>
+            <dict>
+              <key>string</key>
+              <string>Downloaded: {{JavaScript Result.title}} by {{JavaScript Result.author}}
+Quality: {{JavaScript Result.quality}}</string>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFControlFlowMode</key>
+          <integer>2</integer>
+        </dict>
+      </dict>
+    </array>
+    <key>WFWorkflowName</key>
+    <string>YouTube Downloader (Updated)</string>
+    <key>WFWorkflowIcon</key>
+    <dict>
+      <key>WFWorkflowIconStartColor</key>
+      <integer>4282601983</integer>
+      <key>WFWorkflowIconGlyphNumber</key>
+      <integer>59511</integer>
+    </dict>
+  </dict>
+</plist>
