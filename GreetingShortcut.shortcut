@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>name</key>
+    <string>Greeting Shortcut</string>
+    <key>actions</key>
+    <array>
+      <dict>
+        <key>type</key>
+        <string>Show Result</string>
+        <key>parameters</key>
+        <dict>
+          <key>text</key>
+          <string>Hello, Alice!</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>type</key>
+        <string>Show Result</string>
+        <key>parameters</key>
+        <dict>
+          <key>text</key>
+          <string>Hello, Bob!</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>type</key>
+        <string>Show Result</string>
+        <key>parameters</key>
+        <dict>
+          <key>text</key>
+          <string>Hello, Charlie!</string>
+        </dict>
+      </dict>
+    </array>
+  </dict>
+</plist>
